@@ -39,10 +39,10 @@ architecture Behavioral of clk_div is
 begin
 
 	process(clk_in)
-		variable cnt: integer range 0 to 24 := 0;
+		variable cnt: integer range 0 to 25000 := 0;
 	begin
 		if rising_edge(clk_in) then
-			if (cnt=24)then
+			if (cnt=25000)then
 				cnt:=0;
 				clk_int <= not clk_int;
 			else
