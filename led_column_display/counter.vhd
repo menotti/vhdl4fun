@@ -28,13 +28,16 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 --use UNISIM.VComponents.all;
 
 entity counter is
+	generic(
+		address_width : integer := 5
+	);
     Port ( clk : in  STD_LOGIC;
-           count : out  STD_LOGIC_VECTOR (5 downto 0));
+           count : out  STD_LOGIC_VECTOR (address_width-1 downto 0));
 end counter;
 
 architecture Behavioral of counter is
 
-	signal count_int: std_logic_vector(5 downto 0) := "000000";
+	signal count_int: std_logic_vector(address_width-1 downto 0) := (others =>'0');
 
 begin
 

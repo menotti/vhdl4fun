@@ -3,15 +3,15 @@
 -- Company: 
 -- Engineer:
 --
--- Create Date:   08:57:54 03/14/2012
--- Design Name:   block_ram
--- Module Name:   C:/temp/led_column_display/t_block_ram.vhd
+-- Create Date:   10:21:28 03/14/2012
+-- Design Name:   led_column_display
+-- Module Name:   /home/menotti/workspace/vhdl4fun/led_column_display/t_led_column_display.vhd
 -- Project Name:  led_column_display
 -- Target Device:  
 -- Tool versions:  
 -- Description:   
 -- 
--- VHDL Test Bench Created by ISE for module: block_ram
+-- VHDL Test Bench Created by ISE for module: led_column_display
 --
 -- Dependencies:
 -- 
@@ -31,51 +31,46 @@ USE ieee.std_logic_1164.ALL;
 USE ieee.std_logic_unsigned.all;
 USE ieee.numeric_std.ALL;
 
-ENTITY t_block_ram_vhd IS
-END t_block_ram_vhd;
+ENTITY t_led_column_display IS
+END t_led_column_display;
 
-ARCHITECTURE behavior OF t_block_ram_vhd IS 
+ARCHITECTURE behavior OF t_led_column_display IS 
 
 	-- Component Declaration for the Unit Under Test (UUT)
-	COMPONENT block_ram
+	COMPONENT led_column_display
+	generic (
+		address_width : integer := 5);
 	PORT(
-		data_in : IN std_logic_vector(7 downto 0);
-		address : IN std_logic_vector(5 downto 0);
-		we : IN std_logic;
-		oe : IN std_logic;
 		clk : IN std_logic;          
-		data_out : OUT std_logic_vector(7 downto 0)
+		cnt_high : IN std_logic_vector(7 downto 0);
+		led : OUT std_logic_vector(7 downto 0)
 		);
 	END COMPONENT;
 
 	--Inputs
-	SIGNAL we :  std_logic := '0';
-	SIGNAL oe :  std_logic := '1';
 	SIGNAL clk :  std_logic := '0';
-	SIGNAL data_in :  std_logic_vector(7 downto 0) := (others=>'0');
-	SIGNAL address :  std_logic_vector(5 downto 0) := (others=>'0');
+	SIGNAL cnt_high : std_logic_vector(7 downto 0) := (others => '1');
 
 	--Outputs
-	SIGNAL data_out :  std_logic_vector(7 downto 0);
+	SIGNAL led :  std_logic_vector(7 downto 0);
 
 BEGIN
 
 	-- Instantiate the Unit Under Test (UUT)
-	uut: block_ram PORT MAP(
-		data_in => data_in,
-		address => address,
-		we => we,
-		oe => oe,
+	uut: led_column_display 
+	GENERIC MAP(
+		address_width => 5
+	)
+	PORT MAP(
 		clk => clk,
-		data_out => data_out
+		cnt_high => cnt_high,
+		led => led
 	);
 
 	tb : PROCESS
 	BEGIN
-		-- Wait 100 ns for global reset to finish
-		wait for 100 ns;
+		wait for 10 ns;
 		clk <= not clk;
-		address <= address + 1;
 	END PROCESS;
 
 END;
