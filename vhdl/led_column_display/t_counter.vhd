@@ -61,7 +61,7 @@ BEGIN
 	tb : PROCESS
 	BEGIN
 		-- Wait 100 ns for global reset to finish
-		wait for 100 ns;
+		wait for 150 ns;
 		clk <= not clk;
 	END PROCESS;
 
