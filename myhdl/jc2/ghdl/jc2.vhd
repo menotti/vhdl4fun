@@ -27,14 +27,10 @@ begin
      if( rising_edge(clk) ) then
          if (stop = '1') then
 	     if (goLeft = '0') then
-		temp(1) <= temp(0);
-                temp(2) <= temp(1);
-                temp(3) <= temp(2);
+		temp(3 downto 1) <= temp(2 downto 0);
                 temp(0) <= not temp(3);
 	     elsif (goRight = '0') then
-                temp(2) <= temp(3);
-                temp(1) <= temp(2);
-                temp(0) <= temp(1);
+                temp(2 downto 0) <= temp(3 downto 1);
                 temp(3) <= not temp(0);
              end if;
          end if;

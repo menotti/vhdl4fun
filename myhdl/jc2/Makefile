@@ -16,4 +16,4 @@ view :
 	$(WAVEFORM_VIEWER) *.vcd &
 
 clean :
-	$(REMOVE_CMD) *.vcd *.vhd *.v
+	$(REMOVE_CMD) *.vcd* *.vhd *.v
