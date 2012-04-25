@@ -6,17 +6,17 @@ use work.all;
 ---------------------------------------------
 -- declarações
 
-entity dff is
+entity dffa is
 port(	d: in std_logic;
 	clk: in std_logic;
 	rst: in std_logic;
 	q: out std_logic
 );
-end dff;
+end dffa;
 
 ----------------------------------------------
 
-architecture behv of dff is
+architecture behv of dffa is
 begin
 
     process(d, rst, clk)

@@ -1,5 +1,5 @@
 // flip flop d com entrada reset assíncrona
-module dffa (d, clk, q);
+module dffa (d, clk, q, rst);
 
 // inputs d = data, clk = clock, rst = reset
 input d, clk, rst;

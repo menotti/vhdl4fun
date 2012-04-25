@@ -6,7 +6,7 @@ ACTIVE, INACTIVE = bool(0), bool(1)
  
 from jc2 import jc2
  
-def test(jc2):
+def test():
  
     goLeft, goRight, stop, clk = [Signal(INACTIVE) for i in range(4)]
     q = Signal(intbv(0)[4:])
@@ -43,6 +43,15 @@ def test(jc2):
             print bin(q, 4)
  
     return clkgen, jc2_inst, stimulus, monitor
+
+def convert(jc2):
+    left, right, stop, clk = [Signal(INACTIVE) for i in range(4)]
+    q = Signal(intbv(0)[4:])
+    toVerilog(jc2, left, right, stop, clk, q)
+    toVHDL(jc2, left, right, stop, clk, q)
  
-sim = Simulation(test(jc2))
-sim.run()
+convert(jc2)
+
+tb = traceSignals(test) 
+sim = Simulation(tb)
+sim.run(2000)

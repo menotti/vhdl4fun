@@ -47,6 +47,7 @@ def simulate(timesteps):
 def convert():
     q, d, clk, rst = [Signal(bool(0)) for i in range(4)]
     toVerilog(dffa, q, d, clk, rst)
+    toVHDL(dffa, q, d, clk, rst)
  
 simulate(2000)
 convert() 

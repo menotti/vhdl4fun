@@ -11,7 +11,7 @@ output q;
 reg q;
 
 // lógica
-always @ ( posedge clk)
+always @ (posedge clk) begin
   q <= d;
 end
 
