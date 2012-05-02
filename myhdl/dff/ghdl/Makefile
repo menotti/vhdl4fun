@@ -7,7 +7,7 @@ GHDL_FLAGS  = -fexplicit --std=02 --ieee=synopsys --warn-no-vital-generic
 #GHDL_SIM_OPT = --assert-level=error
 #GHDL_SIM_OPT = --stop-time=500ns
 #GHDL_SIM_OPT = --disp-tree --stats --stop-time=21us
-GHDL_SIM_OPT = --stop-time=150ns --ieee-asserts=disable
+GHDL_SIM_OPT = --stop-time=1000ns --ieee-asserts=disable
 
 WAVEFORM_VIEWER = gtkwave
 

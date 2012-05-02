@@ -22,7 +22,7 @@ def t_dff():
  
     @always(clk.negedge)
     def stimulus():
-        d.next = randrange(2)
+        d.next = not d
  
     return dff_inst, clkgen, stimulus
  
@@ -36,5 +36,5 @@ def convert():
     toVerilog(dff, q, d, clk)
     toVHDL(dff, q, d, clk)
  
-simulate(2000)
+simulate(1000)
 convert() 

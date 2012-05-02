@@ -15,7 +15,7 @@ reg [3:0] q;
 always @(posedge clk)
 
     if (stop == 1) begin
-
+	// precedência ao lado esquerdo caso ambos estejam ativos
         if (goLeft == 0) begin
             q[4-1:1] <= q[3-1:0];
             q[0] <= (!q[3]);

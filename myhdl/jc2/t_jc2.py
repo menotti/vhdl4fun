@@ -54,4 +54,4 @@ convert(jc2)
 
 tb = traceSignals(test) 
 sim = Simulation(tb)
-sim.run(2000)
+sim.run(1000)

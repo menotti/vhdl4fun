@@ -1,3 +1,4 @@
+`timescale 1ns / 100ps
 module t_dffa;
   reg d, clk, rst;
   wire q;
@@ -11,16 +12,18 @@ module t_dffa;
   end
 
   always
-    #5 clk = !clk;
+    #10 clk = !clk;
 
-  always
-    #7 d = !d;
+  always @(negedge clk)
+    d = !d;
 
   initial begin
-        #80 rst = 0;
-	#100 $finish;
+        #800 rst = 0;
   end
 
+  initial begin
+	#1000 $finish;
+  end
 
   initial  begin
     $dumpfile ("t_dffa.vcd"); 

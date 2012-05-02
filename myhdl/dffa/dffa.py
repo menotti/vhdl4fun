@@ -15,7 +15,8 @@ def dffa(q, d, clk, rst):
 
 def tb_dffa():
  
-    q, d, clk, rst = [Signal(bool(0)) for i in range(4)]
+    q, d, clk = [Signal(bool(0)) for i in range(3)]
+    rst = Signal(bool(1))
  
     dffa_inst = dffa(q, d, clk, rst)
  
@@ -25,17 +26,12 @@ def tb_dffa():
  
     @always(clk.negedge)
     def stimulus():
-        d.next = randrange(2)
+        d.next = not d;
 
     @instance
     def rstgen():
-        yield delay(5)
-        rst.next = 1
-        while True:
-            yield delay(randrange(500, 1000))
-            rst.next = 0
-            yield delay(randrange(80, 140))
-            rst.next = 1 
+        yield delay(800)
+        rst.next = 0;
 
     return dffa_inst, clkgen, stimulus, rstgen
  
@@ -49,5 +45,5 @@ def convert():
     toVerilog(dffa, q, d, clk, rst)
     toVHDL(dffa, q, d, clk, rst)
  
-simulate(2000)
+simulate(1000)
 convert() 

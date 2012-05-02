@@ -1,3 +1,4 @@
+`timescale 1ns / 100ps
 module t_dff;
   reg d, clk;
   wire q;
@@ -10,13 +11,13 @@ module t_dff;
   end
 
   always
-    #5 clk = !clk;
+    #10 clk = !clk;
 
-  always
-    #7 d = !d;
+  always @(negedge clk)
+    d = !d;
 
   initial begin
-	#100 $finish;
+	#1000 $finish;
   end
 
 

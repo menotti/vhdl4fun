@@ -40,25 +40,22 @@ port map (
 
 clock_gen: process
 begin
-	wait for 10 ns;
-	clk <= not clk;
+	for i in 1 to 1000 loop
+	    wait for 10 ns;
+	    clk <= not clk;
+	end loop;
 end process;
 
 stim_gen: process
 begin
-	wait for 15 ns;
-	d <= '1';
-	wait for 30 ns;
-	d <= '0';
-	wait for 30 ns;
-	d <= '1';
-	wait for 30 ns;
-	rst <= '0';
-	wait for 30 ns;
-	rst <= '1';
-	d <= '0';
+	wait until clk = '0';
+	d <= not d;
+end process;
 
-	wait; -- will wait forever;
+rst_gen: process
+begin
+	wait for 800 ns;
+	rst <= '0';
 end process;
 
 end behav;
