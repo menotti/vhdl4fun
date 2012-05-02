@@ -9,7 +9,7 @@ input goLeft, goRight, stop, clk;
 output [3:0] q;
 
 // variáveis internas
-reg [3:0] q;
+reg [3:0] q = 4'b0;
 
 // lógica
 always @(posedge clk)

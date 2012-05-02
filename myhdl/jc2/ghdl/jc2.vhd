@@ -19,23 +19,41 @@ end jc2;
 architecture behv of jc2 is
 
 signal temp: unsigned(3 downto 0):=(others => '0');
+signal x1: std_logic := '0';
+signal x2: std_logic := '0';
 
 begin
-q <= temp;
+
 process(clk)
 begin
      if( rising_edge(clk) ) then
-         if (stop = '1') then
-	     if (goLeft = '0') then
+	     if (x1 = '1') then
 		temp(3 downto 1) <= temp(2 downto 0);
                 temp(0) <= not temp(3);
-	     elsif (goRight = '0') then
+	     elsif (x2 = '1') then
                 temp(2 downto 0) <= temp(3 downto 1);
                 temp(3) <= not temp(0);
              end if;
-         end if;
      end if;
 end process;
+
+process(clk)
+begin
+	if (rising_edge(clk)) then
+		if (stop='0') then
+			x1 <= '0';
+			x2 <= '0';
+		elsif (goLeft='0') then
+			x1 <= '1';
+			x2 <= '0';
+		elsif (goRight='0') then
+			x1 <= '0';
+			x2 <= '1';
+		end if;
+	end if;
+end process;
+
+q <= temp;
      
 end behv;
 

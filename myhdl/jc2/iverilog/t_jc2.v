@@ -1,8 +1,9 @@
 `timescale 1ns / 100ps
 module t_jc2;
-
   reg goLeft, goRight, stop, clk;
-  wire q;
+  wire [3:0] q;
+
+  jc2 dut(goLeft, goRight, stop, clk, q);
 
   initial begin
     clk = 1;
@@ -14,14 +15,12 @@ module t_jc2;
   always
     #10 clk = !clk;
 
-  always @(negedge clk)
-    #10 goLeft = !goLeft;
-
-  always @(negedge clk)
-    #13 stop = !stop;
-
-  always @(negedge clk)
-    #23 goRight = !goRight;
+  always begin
+    #110 goLeft = !goLeft;
+    #20 goLeft = !goLeft;
+    #200 goRight = !goRight;
+    #20 goRight = !goRight;
+  end
 
   initial begin
 	#1000 $finish;
