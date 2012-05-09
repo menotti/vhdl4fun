@@ -11,7 +11,7 @@ output q;
 reg q;
 
 // lógica
-always @ ( posedge clk)
+always @ ( rst, posedge clk)
 if (~rst) begin
   q <= 1'b0;
 end else begin

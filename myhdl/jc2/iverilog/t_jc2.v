@@ -15,15 +15,17 @@ module t_jc2;
   always
     #10 clk = !clk;
 
-  always begin
-    #110 goLeft = !goLeft;
-    #20 goLeft = !goLeft;
-    #200 goRight = !goRight;
-    #20 goRight = !goRight;
+  initial begin
+	#50 goLeft = 0;
+	#20 goLeft = 1;
+	#180 stop = 0;
+	#20 stop = 1;
+	#40 goRight = 0;
+	#20 goRight = 1;
   end
 
   initial begin
-	#1000 $finish;
+	#510 $finish;
   end
 
   initial  begin

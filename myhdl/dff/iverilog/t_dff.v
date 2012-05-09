@@ -17,6 +17,8 @@ module t_dff;
     d = !d;
 
   initial begin
+        #0 force q = 0;
+        #10 release q;
 	#1000 $finish;
   end
 

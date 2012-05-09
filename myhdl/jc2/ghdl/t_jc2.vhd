@@ -23,7 +23,7 @@ end component;
     signal goLeft : std_logic := '1';
     signal goRight : std_logic := '1';
     signal stop : std_logic := '1';
-    signal clk : std_logic := '0';
+    signal clk : std_logic := '1';
      --Outputs
     signal q : unsigned(3 downto 0);
 
@@ -44,25 +44,28 @@ BEGIN
     -- Clock process definitions
     clock_gen: process
     begin
-        wait for 5 ns;
-	clk <= not clk;
+	for i in 1 to 510 loop
+	    wait for 10 ns;
+	    clk <= not clk;
+	end loop;
     end process;
 
     -- Stimulus process
     stim_gen: process
     begin        
-        wait for 15 ns;
-	goLeft <= '0';
-	wait for 30 ns;
-	goLeft <= '1';
-	wait for 30 ns;
-	goRight <= '0';
-	wait for 30 ns;
-	stop <= '0';
-	wait for 30 ns;
-	stop <= '1';
-	goRight <= '1';
-	wait; -- will wait forever;
+		wait for 50 ns;
+		goLeft <= '0';
+		wait for 20 ns;
+		goLeft <= '1';
+		wait for 180 ns;
+		stop <= '0';
+		wait for 20 ns;
+		stop <= '1';
+		wait for 40 ns;
+		goRight <= '0';
+		wait for 20 ns;
+		goRight <= '1';
+		wait; -- will wait forever;
     end process;
 
 END;

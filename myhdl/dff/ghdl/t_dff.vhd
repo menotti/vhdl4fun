@@ -34,7 +34,7 @@ port map (
 	q => q
 );
 
-clock_gen: process
+clock_gen: process 
 begin
 	for i in 1 to 1000 loop
 	    wait for 10 ns;
@@ -42,7 +42,7 @@ begin
 	end loop;
 end process;
 
-stim_gen: process
+stim_gen: process 
 begin
 	wait until clk = '0';
 	d <= not d;

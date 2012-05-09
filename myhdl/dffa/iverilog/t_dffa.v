@@ -22,6 +22,8 @@ module t_dffa;
   end
 
   initial begin
+	#0 force q = 0; // garante um valor inicial para a saída
+        #10 release q;
 	#1000 $finish;
   end
 

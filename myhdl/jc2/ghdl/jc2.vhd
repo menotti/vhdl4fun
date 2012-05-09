@@ -28,12 +28,12 @@ process(clk)
 begin
      if( rising_edge(clk) ) then
 	     if (x1 = '1') then
-		temp(3 downto 1) <= temp(2 downto 0);
-                temp(0) <= not temp(3);
+			temp(3 downto 1) <= temp(2 downto 0);
+            temp(0) <= not temp(3);
 	     elsif (x2 = '1') then
-                temp(2 downto 0) <= temp(3 downto 1);
-                temp(3) <= not temp(0);
-             end if;
+            temp(2 downto 0) <= temp(3 downto 1);
+            temp(3) <= not temp(0);
+         end if;
      end if;
 end process;
 
