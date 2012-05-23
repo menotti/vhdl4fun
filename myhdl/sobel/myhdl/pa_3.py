@@ -90,7 +90,7 @@ def test_PA3():
  
     clock = Signal(0)
     result = Signal(intbv(0)[20:])
-    data0x, data1x, data2x = [Signal(intbv(2**14)[18:]) for i in range(3)]
+    data0x, data1x, data2x = [Signal(intbv(5)[18:]) for i in range(3)]
     
     pa3_inst = PA_3(clock, data0x, data1x, data2x, result)
  
