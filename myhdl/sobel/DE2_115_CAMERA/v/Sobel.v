@@ -138,7 +138,8 @@ SQRT sqrt0 (
 
 always@(posedge iCLK) begin
     if (iDVAL)
-      oDATA <= (Abs_mag > iTHRESHOLD) ? 0 : 1023;
+      //oDATA <= (Abs_mag > iTHRESHOLD) ? 0 : 1023;
+	  oData <= Abs_mag;
     else
       oDATA <= 0;
 end

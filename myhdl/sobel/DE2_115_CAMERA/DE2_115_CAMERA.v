@@ -360,6 +360,7 @@ input		          		ENET1_RX_CRS;
 input		     [3:0]		ENET1_RX_DATA;
 input		          		ENET1_RX_DV;
 
+
 input		          		ENET1_RX_ER;
 input		          		ENET1_TX_CLK;
 output		     [3:0]		ENET1_TX_DATA;
@@ -671,9 +672,9 @@ Sobel sobel0 (
 // SW[15] 
 // ativo: sobel
 // inativo: colorido
-wire [9:0] red_or_sobel = SW[15] ? wSobel : wVGA_G;
+wire [9:0] red_or_sobel = SW[15] ? wSobel : wVGA_R;
 wire [9:0] green_or_sobel = SW[15] ? wSobel : wVGA_G;
-wire [9:0] blue_or_sobel = SW[15] ? wSobel : wVGA_G;
+wire [9:0] blue_or_sobel = SW[15] ? wSobel : wVGA_B;
 
 //VGA DISPLAY
 VGA_Controller		u1	(	//	Host Side
