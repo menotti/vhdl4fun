@@ -361,6 +361,7 @@ input		     [3:0]		ENET1_RX_DATA;
 input		          		ENET1_RX_DV;
 
 
+
 input		          		ENET1_RX_ER;
 input		          		ENET1_TX_CLK;
 output		     [3:0]		ENET1_TX_DATA;
@@ -661,12 +662,10 @@ wire [9:0] wVGA_B = Read_DATA1[9:0];
 wire [9:0] wSobel;
 
 Sobel sobel0 (
-  .iCLK(VGA_CTRL_CLK),
-  .iRST_N(DLY_RST_2),
-  .iTHRESHOLD(SW[9:2]), // threshold do sobel (configurar assim: SW[5] e SW[6] ativo e o resto inativo
-  .iDVAL(Read),
-  .iDATA(wVGA_G), // canal verde/cinza (com o threshold configurado fica cinza)
-  .oDATA(wSobel)
+  .clock(VGA_CTRL_CLK),
+  .pin(wVGA_G),
+  .pout(wSobel),
+  .control(Read)
 );
 
 // SW[15] 

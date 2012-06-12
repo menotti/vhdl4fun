@@ -1,147 +1,109 @@
-/* 
-(C) OOMusou 2008 http://oomusou.cnblogs.com
+`timescale 1ns/1ns
+			  
+module Sobel( 
+                    clock,// master clock
+					 pin,  // pixel in, synchronous with the clock
+					 pout,  // pixel out
+					 control
+				);
+				
+// Define the image size:				
+parameter SIZE_X = 800,
+         SIZE_Y = 600; 
 
-Filename    : Sobel.v
-Compiler    : Quartus II 8.0
-Description : Demo how to implement Sobel Edge Detector on DE2-70
-Release     : 09/27/2008 1.0
-*/
+input clock, control;
+input  [9:0] pin;
+output [9:0] pout;	
+reg    [9:0] pout;			
 
-module Sobel (
-  input            iCLK,
-  input            iRST_N,
-  input      [7:0] iTHRESHOLD,
-  input            iDVAL,
-  input      [9:0] iDATA,
-  output reg [9:0] oDATA
-);
+// the 9 registers that hold the sliding pixel window:
+reg [7:0] r00, r01, r02, 
+         r10, r11, r12,
+         r20, r21, r22;
 
-// mask x
-parameter X1 = 8'hff, X2 = 8'h00, X3 = 8'h01;
-parameter X4 = 8'hfe, X5 = 8'h00, X6 = 8'h02;
-parameter X7 = 8'hff, X8 = 8'h00, X9 = 8'h01;
+// The two row shift registers:
+reg [7:0] row0[0:SIZE_X-1-3],
+		  row1[0:SIZE_X-1-3];
 
-// mask y
-parameter Y1 = 8'h01, Y2 = 8'h02, Y3 = 8'h01;
-parameter Y4 = 8'h00, Y5 = 8'h00, Y6 = 8'h00;
-parameter Y7 = 8'hff, Y8 = 8'hfe, Y9 = 8'hff;
+// intermediate registers to compute the result of the H and V filter:
+reg [11:0] H, V;
 
-wire  [7:0] Line0;
-wire  [7:0] Line1;
-wire  [7:0] Line2;
+// intermediate registers to compute the abs of H and V:
+reg [11:0] H1, V1;
 
-wire  [17:0]  Mac_x0;
-wire  [17:0]  Mac_x1;
-wire  [17:0]  Mac_x2;
+// iteration variable
+integer i;
+		  
+// build a long shift-register with the top row of the sliding window,
+// all the pixels up to the second row of the window, the second row of the window,
+// the pixels up to the thrid row of the window and finaly the last row of the sliding window:
+// r00-r01-r02-######row0######-r10-r11-r12-######row1######-r20-r21-r22
+//
+// for each new pixel, shift left the whole SR and input the new pixel into register r22:
+always @(posedge clock)
+begin
 
-wire  [17:0]  Mac_y0;
-wire  [17:0]  Mac_y1;
-wire  [17:0]  Mac_y2;
+if (control) begin
 
-wire  [19:0]  Pa_x;
-wire  [19:0]  Pa_y;
+	 r00 <= r01;
+	 r01 <= r02;
+	 r02 <= row0[0];
 
-wire  [15:0]  Abs_mag;
+	 // note these loops are always unrolled before RTL synthesis:
+	 for(i=0; i<SIZE_X-1-3; i=i+1)
+		row0[i] <= row0[i+1];
+		
+	 row0[SIZE_X-1-3] <= r10;
+	 r10 <= r11;
+	 r11 <= r12;
+	 r12 <= row1[0];
 
-LineBuffer_3 b0 (
-  .clken(iDVAL),
-  .clock(iCLK),
-  .shiftin(iDATA[9:2]),
-  .taps0x(Line0),
-  .taps1x(Line1),
-  .taps2x(Line2)
-);
+	 for(i=0; i<SIZE_X-1-3; i=i+1)
+		row1[i] <= row1[i+1];
+		
+	 row1[SIZE_X-1-3] <= r20;
+	 r20 <= r21;
+	 r21 <= r22;
+	 r22 <= pin[9:2];  
+end
+end
+// The set of 9 registers rij contain a 3x3 pixel window of the input image.
+// this block computes the H and V filters for the Sobel algorithm:
+// H window coefficients:       V window coefficients:
+//     -1 0 1                       -1 -2 -1
+//     -2 0 2                        0  0  0
+//     -1 0 1                        1  2  1
+// 
+// for each new pixel (i,j) loaded into r22 this computes the central pixel of the current window
+// in position (i-1, j-1), thus with a latency equal to SIZE_X+1; 
+// the pipelined datapath adds more 3 clocks:
+always @(posedge clock)
+begin
+ // H and V must be 12 bit long (range of H or V result is [-2040,+2040])
+ H <= -r00 + r02 - (r10<<1) + (r12<<1) - r20 + r22;
+ V <= -r00 - (r01<<1) - r02 + r20 + (r21<<1) + r22;
 
-// X
-MAC_3 x0 (
-  .aclr0(!iRST_N),
-  .clock0(iCLK),
-  .dataa_0(Line0),
-  .datab_0(X9),
-  .datab_1(X8),
-  .datab_2(X7),
-  .result(Mac_x0)
-);
+ // ABS of H and V into H1 and V1:
+ if ( H[11] ) // if negative, change sign
+   H1 <= -H;
+ else
+   H1 <= H;
 
-MAC_3 x1 (
-  .aclr0(!iRST_N),
-  .clock0(iCLK),
-  .dataa_0(Line1),
-  .datab_0(X6),
-  .datab_1(X5),
-  .datab_2(X4),
-  .result(Mac_x1)
-);
+ if ( V[11] ) // if negative, change sign
+   V1 <= -V;
+ else
+   V1 <= V;
 
-MAC_3 x2 (
-  .aclr0(!iRST_N),
-  .clock0(iCLK),
-  .dataa_0(Line2),
-  .datab_0(X3),
-  .datab_1(X2),
-  .datab_2(X1),
-  .result(Mac_x2)
-);
+end
 
-// Y
-MAC_3 y0 (
-  .aclr0(!iRST_N),
-  .clock0(iCLK),
-  .dataa_0(Line0),
-  .datab_0(Y9),
-  .datab_1(Y8),
-  .datab_2(Y7),
-  .result(Mac_y0)
-);
-
-MAC_3 y1 (
-  .aclr0(!iRST_N),
-  .clock0(iCLK),
-  .dataa_0(Line1),
-  .datab_0(Y6),
-  .datab_1(Y5),
-  .datab_2(Y4),
-  .result(Mac_y1)
-);
-
-MAC_3 y2 (
-  .aclr0(!iRST_N),
-  .clock0(iCLK),
-  .dataa_0(Line2),
-  .datab_0(Y3),
-  .datab_1(Y2),
-  .datab_2(Y1),
-  .result(Mac_y2)
-);
-
-PA_3 pa0 (
-  .clock(iCLK),
-  .data0x(Mac_x0),
-  .data1x(Mac_x1),
-  .data2x(Mac_x2),
-  .result(Pa_x)
-);
-
-PA_3 pa1 (
-  .clock(iCLK),
-  .data0x(Mac_y0),
-  .data1x(Mac_y1),
-  .data2x(Mac_y2),
-  .result(Pa_y)
-);
-
-SQRT sqrt0 (
-  .clk(iCLK),
-  .radical(Pa_x * Pa_x + Pa_y * Pa_y),
-  .q(Abs_mag)
-);
-
-always@(posedge iCLK) begin
-    if (iDVAL)
-      //oDATA <= (Abs_mag > iTHRESHOLD) ? 0 : 1023;
-	  oData <= Abs_mag;
+always@(posedge clock) begin
+    if (control)
+	 // pixel out: add H and V (unsigned) and reduce to 8 bits:	
+		pout <= (H1 + V1);
     else
-      oDATA <= 0;
+      pout <= 0;
 end
 
 endmodule
+
+

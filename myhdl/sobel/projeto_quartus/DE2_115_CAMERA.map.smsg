@@ -1,5 +1,0 @@
-Info (10281): Verilog HDL Declaration information at Sobel.v(20): object "X1" differs only in case from object "x1" in the same scope
-Info (10281): Verilog HDL Declaration information at Sobel.v(20): object "X2" differs only in case from object "x2" in the same scope
-Info (10281): Verilog HDL Declaration information at Sobel.v(25): object "Y1" differs only in case from object "y1" in the same scope
-Info (10281): Verilog HDL Declaration information at Sobel.v(25): object "Y2" differs only in case from object "y2" in the same scope
-Warning (10273): Verilog HDL warning at Sdram_Control.v(320): extended using "x" or "z"
