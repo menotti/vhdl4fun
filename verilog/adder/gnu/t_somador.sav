@@ -1,17 +1,9 @@
 [size] 740 400
 [pos] -1 -1
-*-14.433735 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-14.667144 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 @28
 t_somador.DUT.ci
 t_somador.DUT.co
 t_somador.DUT.i0
 t_somador.DUT.i1
 t_somador.DUT.s
-t_somador.ci
-t_somador.co
-t_somador.i0
-t_somador.i1
-@22
-t_somador.i[31:0]
-@28
-t_somador.s
