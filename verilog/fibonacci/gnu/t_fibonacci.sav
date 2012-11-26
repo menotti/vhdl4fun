@@ -1,0 +1,13 @@
+[size] 740 400
+[pos] -1 -1
+*-15.841285 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+@28
+t_fibonacci.DUT.clk
+@22
+t_fibonacci.DUT.reg_0[15:0]
+t_fibonacci.DUT.reg_1[15:0]
+@28
+t_fibonacci.DUT.rst
+@22
+t_fibonacci.DUT.s[15:0]
+t_fibonacci.i[31:0]
