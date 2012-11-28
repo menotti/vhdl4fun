@@ -1,31 +1,13 @@
 [size] 740 400
 [pos] -1 -1
-*-13.603665 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-15.841285 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 @28
 t_fibonacci.DUT.clk
-t_fibonacci.DUT.regX.clk
 @22
-t_fibonacci.DUT.regX.d[15:0]
-t_fibonacci.DUT.regX.q[15:0]
+t_fibonacci.DUT.reg_0[15:0]
+t_fibonacci.DUT.reg_1[15:0]
 @28
-t_fibonacci.DUT.regX.rst
-t_fibonacci.DUT.regY.clk
-@22
-t_fibonacci.DUT.regY.d[15:0]
-t_fibonacci.DUT.regY.q[15:0]
-@28
-t_fibonacci.DUT.regY.rst
 t_fibonacci.DUT.rst
 @22
-t_fibonacci.DUT.s0[15:0]
-t_fibonacci.DUT.s1[15:0]
-t_fibonacci.DUT.s2[15:0]
 t_fibonacci.DUT.s[15:0]
-@28
-t_fibonacci.clk
-@22
 t_fibonacci.i[31:0]
-@28
-t_fibonacci.rst
-@22
-t_fibonacci.s[15:0]

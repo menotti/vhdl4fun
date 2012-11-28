@@ -36,7 +36,7 @@ module reg16(clk, rst, d, q);
 	output [15:0] q;
 	reg [15:0] q;
 	
-	always @(posedge clk or negedge rst)
+	always @(posedge clk or posedge rst)
 	begin
 		if (rst == 1)
 			q <= rst_value;

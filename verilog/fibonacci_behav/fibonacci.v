@@ -3,9 +3,6 @@ module fibonacci(clk, rst, s);
 	input clk, rst;
 	output [15:0] s;
 
-	wire clk, rst;
-	wire [15:0] s;
-
 	reg [15:0] reg_0;
 	reg [15:0] reg_1;
 
