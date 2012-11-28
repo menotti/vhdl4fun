@@ -1,0 +1,9 @@
+# for Xilinx Spartan3 Starter Kit
+NET  clk50        LOC="T9";
+NET  vga_h_sync	LOC="r9";
+NET  vga_v_sync	LOC="t10";
+NET  vga_R			LOC="r12";
+NET  vga_G			LOC="t12";
+NET  vga_B			LOC="r11";
+NET  left			LOC="l14";
+NET  right	 		LOC="m13";
