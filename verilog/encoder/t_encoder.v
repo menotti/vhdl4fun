@@ -50,5 +50,9 @@ module t_encoder;
 		end
 	end
  
+	initial begin
+		$dumpfile ("t_encoder.vcd");
+		$dumpvars; 
+	end 
 
 endmodule 

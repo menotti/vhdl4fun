@@ -19,6 +19,7 @@ module t_multiplier;
 		data[2] = 3'b010;
 		data[3] = 3'b111;
 	end
+
 	initial
 	begin
 		for (i = 0; i < cycles; i = i + 1)
@@ -34,4 +35,10 @@ module t_multiplier;
 		end
 		$finish;
 	end
+
+	initial 
+	begin
+		$dumpfile ("t_multiplier.vcd");
+		$dumpvars; 
+	end 
 endmodule

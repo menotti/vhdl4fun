@@ -50,4 +50,10 @@ module t_decoder;
 			end
 		end
 	end
+
+	initial
+	begin
+		$dumpfile("t_decoder.vcd");
+		$dumpvars;
+	end
 endmodule 

@@ -1,0 +1,27 @@
+[*]
+[*] GTKWave Analyzer v3.3.41 (w)1999-2012 BSI
+[*] Mon Nov  4 14:16:55 2013
+[*]
+[dumpfile] "/Users/menotti/Documents/workspace/vhdl4fun/verilog/encoder/gnu/t_encoder.vcd"
+[dumpfile_mtime] "Mon Nov  4 14:16:06 2013"
+[dumpfile_size] 1304
+[savefile] "/Users/menotti/Documents/workspace/vhdl4fun/verilog/encoder/gnu/t_encoder.sav"
+[timestart] 0
+[size] 1280 752
+[pos] -1 -1
+*-15.171689 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] t_encoder.
+[sst_width] 203
+[signals_width] 158
+[sst_expanded] 1
+[sst_vpaned_height] 211
+@22
+t_encoder.binary_out[3:0]
+@28
+t_encoder.enable
+@22
+t_encoder.encoder_in[15:0]
+@25
+t_encoder.i[31:0]
+[pattern_trace] 1
+[pattern_trace] 0

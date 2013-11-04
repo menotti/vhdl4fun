@@ -1,0 +1,26 @@
+[*]
+[*] GTKWave Analyzer v3.3.41 (w)1999-2012 BSI
+[*] Mon Nov  4 14:13:28 2013
+[*]
+[dumpfile] "/Users/menotti/Documents/workspace/vhdl4fun/verilog/multiplier/gnu/t_multiplier.vcd"
+[dumpfile_mtime] "Mon Nov  4 14:12:58 2013"
+[dumpfile_size] 473
+[savefile] "/Users/menotti/Documents/workspace/vhdl4fun/verilog/multiplier/gnu/t_multiplier.sav"
+[timestart] 0
+[size] 1000 600
+[pos] -1 -1
+*-13.567470 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] t_multiplier.
+[sst_width] 203
+[signals_width] 86
+[sst_expanded] 1
+[sst_vpaned_height] 157
+@28
+t_multiplier.a
+t_multiplier.b
+@22
+t_multiplier.i[31:0]
+@28
+t_multiplier.prod
+[pattern_trace] 1
+[pattern_trace] 0
