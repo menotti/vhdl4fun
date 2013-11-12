@@ -1,0 +1,30 @@
+[*]
+[*] GTKWave Analyzer v3.3.41 (w)1999-2012 BSI
+[*] Tue Nov 12 18:21:39 2013
+[*]
+[dumpfile] "/Users/menotti/Downloads/vhdl4fun/verilog/quartus_tutorial/gnu/t_tutorial.vcd"
+[dumpfile_mtime] "Tue Nov 12 18:20:47 2013"
+[dumpfile_size] 3749
+[savefile] "/Users/menotti/Downloads/vhdl4fun/verilog/quartus_tutorial/gnu/t_tutorial.sav"
+[timestart] 0
+[size] 1440 856
+[pos] -1 -1
+*-15.162068 187300 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[sst_width] 203
+[signals_width] 94
+[sst_expanded] 1
+[sst_vpaned_height] 247
+@25
+t_tutorial.A[15:0]
+t_tutorial.Addsub
+t_tutorial.B[15:0]
+t_tutorial.Clock
+t_tutorial.Overflow
+t_tutorial.Reset
+t_tutorial.Sel
+t_tutorial.Z[15:0]
+@24
+t_tutorial.i[31:0]
+t_tutorial.j[31:0]
+[pattern_trace] 1
+[pattern_trace] 0
