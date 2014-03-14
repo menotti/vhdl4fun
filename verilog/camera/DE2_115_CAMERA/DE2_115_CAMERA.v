@@ -496,63 +496,44 @@ wire	mvalue_Binary;
 wire	[9:0] Bin_image;
 
 
-	
-assign value2 = (oVGA_R[9:0] + oVGA_G[9:0] + oVGA_B[9:0])/2;
-assign value4 = (oVGA_R[9:0] + oVGA_G[9:0] + oVGA_B[9:0])/4;
-assign value = (value2 + value4)/2;
-
 assign Y[9:2] = ((oVGA_R[9:2] * 307)+(oVGA_G[9:2] * 604)+(oVGA_B[9:2] * 113))>>10;
 assign sw[17:0] = SW[17:0];
 //fetch the high 8 bits
 always @(sw)
-if(!sw[17] && !sw[16] && !sw[15] && !sw[14])begin
+if(sw[17:15] == 3'b000)begin
 	aux1 <= oVGA_R;
 	aux2 <= oVGA_G;
 	aux3 <= oVGA_B;
 end
-else if (sw[17] && !sw[16] && !sw[15] && !sw[14]) begin
+else if (sw[17:15] == 3'b100) begin
 	aux1 <= oVGA_G;
 	aux2 <= oVGA_G;
 	aux3 <= oVGA_G;
 end
-else if(!sw[17] && sw[16] && !sw[15] && !sw[14]) begin
+else if(sw[17:15] == 3'b101) begin
 		aux1 <= Y;
 		aux2 <= Y;
 		aux3 <= Y;
 end
-else if(sw[17] && sw[16] && !sw[15] && !sw[14]) begin
+else if(sw[17:15] == 3'b010) begin
 		aux1 <= wSobel;
 		aux2 <= wSobel;
 		aux3 <= wSobel;
 end
-else if(!sw[17] && !sw[16] && sw[15] && !sw[14])begin
-		aux1 <= 255 - value;
-		aux2 <= 255 - value;
-		aux3 <= 255 - value;
-end
-else if(sw[17] && sw[16] && sw[15] && !sw[14]) begin
-		aux1 <= wDilation;
-		aux2 <= wDilation;
-		aux3 <= wDilation;
-	
-end
-else if(sw[17] && sw[16] && sw[15] && sw[14]) begin
+else if(sw[17:15] == 3'b111)begin
 		aux1 <= Bin_image;
 		aux2 <= Bin_image;
 		aux3 <= Bin_image;
-
 end
-else if(sw[17] && sw[16] && !sw[15] && sw[14]) begin
+else if(sw[17:15] == 3'b011) begin
 		aux1 <= fErosion;
 		aux2 <= fErosion;
-		aux3 <= fErosion;
-
+		aux3 <= fErosion;	
 end
-else if(!sw[17] && !sw[16] && sw[15] && sw[14]) begin
+else if(sw[17:15] == 3'b110) begin
 		aux1 <= fDilation;
 		aux2 <= fDilation;
 		aux3 <= fDilation;
-
 end
 
 assign  oVGA_R  = Read_DATA2[9:0];
@@ -768,7 +749,7 @@ bbinary binary0 (
   .output_data(Bin_image)
 );
 
-// dilation from binary
+// dilation incorreta from binary
 wire       mvalue_dilation;
 wire [9:0] fDilation;
 Ddilation dilation0 (
@@ -780,15 +761,6 @@ Ddilation dilation0 (
   .output_data(fDilation)
 );
 
-// Sobel edge detection
-Sobel1 sobel2 (
-  .CLOCK(VGA_CTRL_CLK),
-  .RESET_N(DLY_RST_2),
-  .input_data(Y),
-  .iDVAL(Read),
-  .thresh({SW[2:0],2'b10}),
-  .output_data(Sobel_edge)
-);
 
 // erosion from binary
 wire       mvalue_erosion;
@@ -802,50 +774,5 @@ Eerosion erosion0 (
   .output_data(fErosion)
 );
 
-// dilation from Sobel
-wire       mvalue_dilation_sobel;
-wire [9:0] fDilation_sobel;
-Ddilation dilation1 (
-  .CLOCK(VGA_CTRL_CLK),
-  .RESET_N(DLY_RST_2),
-  .input_data(wSobel),
-  .iDVAL(Read),
-  .oDVAL(mvalue_dilation_sobel),
-  .output_data(fDilation_sobel)
-);
-
-// Closing from binary
-wire       mvalue_closing_bin;
-wire [9:0] fClosing_bin;
-Eerosion erosion3 (
-  .CLOCK(VGA_CTRL_CLK),
-  .RESET_N(DLY_RST_2),
-  .input_data(Read),
-  .iDVAL(fDilation_sobel),
-  .oDVAL(mvalue_closing_bin),
-  .output_data(fClosing_bin)
-);
-//dilatacao metodo chines
-wire wDVAL_dilation;
-wire [9:0] wDilation;
-Dilation dilation2 (
-  .iCLK(VGA_CTRL_CLK),
-  .iRST_N(DLY_RST_2),
-  .iDVAL(Read),
-  .iDATA(Bin_image),
-  .oDVAL(wDVAL_dilation),
-  .oDATA(wDilation),
-);		
-
-//erosao metodo chines
-wire wDVAL_erosion;
-wire [9:0] wErosion;
-Erosion erosion2 (
-  .iCLK(VGA_CTRL_CLK),
-  .iRST_N(DLY_RST_2),
-  .iDVAL(Read),
-  .iDATA(Bin_image),
-  .oDVAL(wDVAL_erosion),
-  .oDATA(wErosion),
-);					
+			
 endmodule
