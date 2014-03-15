@@ -40,6 +40,7 @@
 //   V1.0 :| Johnny FAN        :| 07/07/09  :| Initial Revision
 // --------------------------------------------------------------------
 `include "VGA_Param.h"
+
 module CCD_Capture(	oDATA,
 					oDVAL,
 					oX_Cont,

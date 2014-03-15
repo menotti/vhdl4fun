@@ -57,7 +57,11 @@ module	VGA_Controller(	//	Host Side
 						//	Control Signal
 						iCLK,
 						iRST_N,
-						iZOOM_MODE_SW
+						iZOOM_MODE_SW,
+						Ret,
+						ret1,
+						ret2,
+						ret3
 							);
 `include "VGA_Param.h"
 
@@ -108,6 +112,11 @@ output	reg			oVGA_H_SYNC;
 output	reg			oVGA_V_SYNC;
 output	reg			oVGA_SYNC;
 output	reg			oVGA_BLANK;
+input Ret;
+input		[9:0]	ret1;
+input		[9:0]	ret2;
+input		[9:0]	ret3;
+
 
 wire		[9:0]	mVGA_R;
 wire		[9:0]	mVGA_G;
@@ -159,15 +168,30 @@ always@(posedge iCLK or negedge iRST_N)
 			end
 		else
 			begin
-				oVGA_R <= mVGA_R;
-				oVGA_G <= mVGA_G;
-                oVGA_B <= mVGA_B;
+				if(Ret == 1'b1) begin
+					if (H_Cont > 500 && H_Cont < 600 && V_Cont > 300 && V_Cont < 400) begin
+						oVGA_R <= ret1;
+						oVGA_G <= ret2;
+						oVGA_B <= ret3;
+					end
+					else  begin
+						oVGA_R <= mVGA_R;
+						oVGA_G <= mVGA_G;
+						oVGA_B <= mVGA_B;
+					end
+				end
+				else begin
+					oVGA_R <= mVGA_R;
+					oVGA_G <= mVGA_G;
+					oVGA_B <= mVGA_B;
+				end
 				oVGA_BLANK <= mVGA_BLANK;
 				oVGA_SYNC <= mVGA_SYNC;
 				oVGA_H_SYNC <= mVGA_H_SYNC;
 				oVGA_V_SYNC <= mVGA_V_SYNC;				
 			end               
 	end
+
 
 
 
