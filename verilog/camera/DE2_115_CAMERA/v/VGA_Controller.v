@@ -118,6 +118,8 @@ input		[9:0]	ret2;
 input		[9:0]	ret3;
 
 
+reg      [6:0] contadorV ;
+reg      [12:0] parametroH1, parametroV1, parametroH2, parametroV2;
 wire		[9:0]	mVGA_R;
 wire		[9:0]	mVGA_G;
 wire		[9:0]	mVGA_B;
@@ -154,6 +156,9 @@ assign	mVGA_B	=	(	H_Cont>=X_START 	&& H_Cont<X_START+H_SYNC_ACT &&
 						V_Cont>=Y_START+v_mask 	&& V_Cont<Y_START+V_SYNC_ACT )
 						?	iBlue	:	0;
 
+						
+
+						
 always@(posedge iCLK or negedge iRST_N)
 	begin
 		if (!iRST_N)

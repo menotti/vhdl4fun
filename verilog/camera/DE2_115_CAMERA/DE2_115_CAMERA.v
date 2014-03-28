@@ -464,7 +464,7 @@ wire	[9:0]	oVGA_R;   				//	VGA Red[9:0]
 wire	[9:0]	oVGA_G;	 				//	VGA Green[9:0]
 wire	[9:0]	oVGA_B;   				//	VGA Blue[9:0]
 wire  [7:0] value, value2, value4;
-reg [9:0] aux1, aux2, aux3;
+wire [9:0] aux1, aux2, aux3;
 reg [9:0] ret1, ret2, ret3;
 wire [7:0] hist;
 wire  [9:0] Y;
@@ -497,59 +497,59 @@ wire	[9:0] Bin_image;
 
 
 assign Y[9:2] = ((oVGA_R[9:2] * 307)+(oVGA_G[9:2] * 604)+(oVGA_B[9:2] * 113))>>10;
-assign sw[17:0] = SW[17:0];
-//fetch the high 8 bits
-always @(sw)
-if(sw[17:15] == 3'b000)begin
-	aux1 <= oVGA_R;
-	aux2 <= oVGA_G;
-	aux3 <= oVGA_B;
-	Ret <= 1'b0;
+
+
+assign aux1 = SW[0] ? morphologic : 
+								(
+								SW[17] ? Y  :     
+								SW[16] ? wSobel  : 
+								SW[15] ? Bin_image	 :	
+								oVGA_R
+								);
+								
+assign aux2 = SW[0] ? morphologic : 
+								(
+								SW[17] ? Y  :
+								SW[16] ? wSobel  : 
+								SW[15] ? Bin_image	 :
+								oVGA_G
+								);
+								
+assign aux3 = SW[0] ? morphologic : 
+								(
+								SW[17] ? Y  : 
+								SW[16] ? wSobel  :
+								SW[15] ? Bin_image	 :
+								oVGA_B
+								);
+								
+								
+wire [3:0] button3 = {SW[14], SW[13], SW[12], SW[11]};
+reg [9:0] morphologic;
+
+always @ (button3) begin
+	case (button3)
+		4'b0000 : morphologic = fDilation;
+		4'b0010 : morphologic = fErosion;
+		4'b0100 : morphologic = fClosing;
+		4'b0110 : morphologic = fOpening;
+		4'b1000 : morphologic = bSobel;
+		4'b1010 : morphologic = fDilation_sobel;
+		4'b1100 : morphologic = fErosion_sobel;
+		4'b1110 : morphologic = fClosing_sobel;
+		4'b1111 : morphologic = fOpening_sobel;
+	endcase
 end
-else if (sw[17:15] == 3'b100) begin
-	aux1 <= oVGA_G;
-	aux2 <= oVGA_G;
-	aux3 <= oVGA_G;
-	Ret <= 1'b0;
-end
-else if(sw[17:15] == 3'b101) begin
-		aux1 <= Y;
-		aux2 <= Y;
-		aux3 <= Y;
-		Ret <= 1'b0;
-end
-else if(sw[17:15] == 3'b010) begin
-		aux1 <= wSobel;
-		aux2 <= wSobel;
-		aux3 <= wSobel;
-		Ret <= 1'b0;
-end
-else if(sw[17:15] == 3'b111)begin
-		aux1 <= Bin_image;
-		aux2 <= Bin_image;
-		aux3 <= Bin_image;
-		Ret <= 1'b0;
-end
-else if(sw[17:15] == 3'b011) begin
-		aux1 <= fErosion;
-		aux2 <= fErosion;
-		aux3 <= fErosion;
-		Ret <= 1'b0;	
-end
-else if(sw[17:15] == 3'b110) begin
-		aux1 <= fDilation;
-		aux2 <= fDilation;
-		aux3 <= fDilation;
-		Ret <= 1'b0;
-end
-else begin
-		aux1 <= oVGA_R;
-		aux2 <= oVGA_G;
-		aux3 <= oVGA_B;
-		ret1 <= 0;
-		ret2 <= 255;
+
+always@(SW[1])begin
+	if(SW[1] == 1'b1) begin
+		ret1 <= 300;
+		ret2 <= 0;
 		ret3 <= 0;
 		Ret <= 1'b1;
+	end
+	else
+		Ret <= 1'b0;
 end
 
 assign  oVGA_R  = Read_DATA2[9:0];
@@ -768,13 +768,13 @@ bbinary binary0 (
   .output_data(Bin_image)
 );
 
-// dilation incorreta from binary
+// dilation from binary
 wire       mvalue_dilation;
 Ddilation dilation0 (
   .CLOCK(VGA_CTRL_CLK),
   .RESET_N(DLY_RST_2),
-  .input_data(Read),
-  .iDVAL(Bin_image),
+  .input_data(Bin_image),
+  .iDVAL(Read),
   .oDVAL(mvalue_dilation),
   .output_data(fDilation)
 );
@@ -786,10 +786,93 @@ Eerosion erosion0 (
   .CLOCK(VGA_CTRL_CLK),
   .RESET_N(DLY_RST_2),
   .input_data(Bin_image),
-  .iDVAL(mvalue_Binary),
+  .iDVAL(Read),
   .oDVAL(mvalue_erosion),
   .output_data(fErosion)
 );
+//sobel + binary
+wire [9:0] bSobel;
+wire mvalue_binary2;
+bbinary binary1 (
+  .CLOCK(VGA_CTRL_CLK),
+  .RESET(DLY_RST_2),
+  .input_data(wSobel),
+  .iDval(Read),
+  .thresh(BIN_THRESHOLD),
+  .oDval(mvalue_binary2),
+  .output_data(bSobel)
+);		
 
-			
+// closing binary
+wire [9:0] fClosing;
+wire mvalue_closing;
+Eerosion closing (
+  .CLOCK(VGA_CTRL_CLK),
+  .RESET_N(DLY_RST_2),
+  .input_data(fDilation),
+  .iDVAL(Read),
+  .oDVAL(mvalue_closing),
+  .output_data(fClosing)
+);
+
+// opening binary
+wire [9:0] fOpening;
+wire mvalue_opening;
+Ddilation opening (
+  .CLOCK(VGA_CTRL_CLK),
+  .RESET_N(DLY_RST_2),
+  .input_data(fErosion),
+  .iDVAL(Read),
+  .oDVAL(mvalue_opening),
+  .output_data(fOpening)
+);
+
+// dilation sobel
+wire [9:0] fDilation_sobel;
+wire mvalue_dilation_sobel;
+Ddilation dilation_sobel (
+  .CLOCK(VGA_CTRL_CLK),
+  .RESET_N(DLY_RST_2),
+  .input_data(bSobel),
+  .iDVAL(Read),
+  .oDVAL(mvalue_dilation_sobel),
+  .output_data(fDilation_sobel)
+);
+
+// erosion sobel
+wire [9:0] fErosion_sobel;
+wire mvalue_erosion_sobel;
+Eerosion erosion_sobel (
+  .CLOCK(VGA_CTRL_CLK),
+  .RESET_N(DLY_RST_2),
+  .input_data(bSobel),
+  .iDVAL(Read),
+  .oDVAL(mvalue_erosion_sobel),
+  .output_data(fErosion_sobel)
+);
+
+//opening sobel
+wire [9:0] fOpening_sobel;
+wire mvalue_opening_sobel;
+Ddilation opening_sobel (
+  .CLOCK(VGA_CTRL_CLK),
+  .RESET_N(DLY_RST_2),
+  .input_data(fErosion_sobel),
+  .iDVAL(Read),
+  .oDVAL(mvalue_opening_sobel),
+  .output_data(fOpening_sobel)
+);
+
+//closing sobel
+wire [9:0] fClosing_sobel;
+wire mvalue_closing_sobel;
+Eerosion closing_sobel (
+  .CLOCK(VGA_CTRL_CLK),
+  .RESET_N(DLY_RST_2),
+  .input_data(fDilation_sobel),
+  .iDVAL(Read),
+  .oDVAL(mvalue_closing_sobel),
+  .output_data(fClosing_sobel)
+);
+
 endmodule

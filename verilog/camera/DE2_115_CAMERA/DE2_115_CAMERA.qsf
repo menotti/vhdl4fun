@@ -1006,13 +1006,10 @@ set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
 set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
 set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
 set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+set_global_assignment -name EDA_SIMULATION_TOOL "ModelSim-Altera (Verilog)"
+set_global_assignment -name EDA_OUTPUT_DATA_FORMAT "VERILOG HDL" -section_id eda_simulation
 set_global_assignment -name VERILOG_FILE v/Dilation.v
 set_global_assignment -name VERILOG_FILE v/Sobel.v
-set_global_assignment -name VERILOG_FILE v/histograma_area_acc.v
-set_global_assignment -name VERILOG_FILE v/histo_control.v
-set_global_assignment -name VERILOG_FILE v/Otsu.v
-set_global_assignment -name VERILOG_FILE v/mem_2port_27bits.v
-set_global_assignment -name QIP_FILE v/mem_2port_27bits.qip
 set_global_assignment -name VERILOG_FILE Sdram_Control/command.v
 set_global_assignment -name VERILOG_FILE Sdram_Control/control_interface.v
 set_global_assignment -name VERILOG_FILE Sdram_Control/sdr_data_path.v
@@ -1039,21 +1036,6 @@ set_global_assignment -name SOURCE_FILE VGA_Param.h
 set_global_assignment -name VERILOG_FILE v/Line_Buffer1.v
 set_global_assignment -name QIP_FILE v/Line_Buffer1.qip
 set_global_assignment -name VERILOG_FILE DE2_115_CAMERA.v
-set_global_assignment -name QIP_FILE clock.qip
-set_global_assignment -name QIP_FILE v/mem_2port1.qip
-set_global_assignment -name QIP_FILE v/mem_2port2.qip
-set_global_assignment -name QIP_FILE v/Multiplicacao01.qip
-set_global_assignment -name QIP_FILE v/multiplicacao_27_19.qip
-set_global_assignment -name QIP_FILE v/multiplicacao_19_19.qip
-set_global_assignment -name QIP_FILE v/subtracao_46_46.qip
-set_global_assignment -name QIP_FILE v/subtracao_38_38.qip
-set_global_assignment -name QIP_FILE v/median_filter.qip
-set_global_assignment -name QIP_FILE v/Registrador.qip
-set_global_assignment -name QIP_FILE v/Divisao.qip
-set_global_assignment -name QIP_FILE v/multiplicacao_45_45.qip
-set_global_assignment -name QIP_FILE v/comparador.qip
-set_global_assignment -name VERILOG_FILE v/sigmaquadrado.v
-set_global_assignment -name VERILOG_FILE v/retangulo.v
 set_global_assignment -name VERILOG_FILE v/bbinary.v
 set_global_assignment -name VERILOG_FILE v/ddilatation.v
 set_global_assignment -name QIP_FILE v/linebufferBuffer_erosion.qip
@@ -1069,6 +1051,6 @@ set_global_assignment -name VERILOG_FILE v/Eerosion.v
 set_global_assignment -name QIP_FILE v/LineBuffer_dilation.qip
 set_global_assignment -name VERILOG_FILE v/Ddilation.v
 set_global_assignment -name VERILOG_FILE v/Erosion.v
-set_global_assignment -name EDA_SIMULATION_TOOL "ModelSim-Altera (Verilog)"
-set_global_assignment -name EDA_OUTPUT_DATA_FORMAT "VERILOG HDL" -section_id eda_simulation
+set_global_assignment -name QIP_FILE v/median_filter.qip
+set_global_assignment -name QIP_FILE v/linebuffer_morph.qip
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

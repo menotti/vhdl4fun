@@ -12,7 +12,7 @@ wire [9:0] linebuffer1;
 wire [9:0] linebuffer2;
 reg  [9:0] Pixel_1, Pixel_2, Pixel_3, Pixel_4, Pixel_5, Pixel_6, Pixel_7, Pixel_8, Pixel_9;
 
-linebufferBuffer_erosion b0    (
+linebuffer_morph b0    (
   .clken(iDVAL),
   .clock(CLOCK),
   .shiftin(input_data),

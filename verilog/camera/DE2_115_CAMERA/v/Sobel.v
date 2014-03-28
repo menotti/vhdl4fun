@@ -5,10 +5,15 @@ module Sobel(
 					 control
 				);
 				
-// Define the image size:				
+// Define the image size:	
+`include "VGA_Param.h"
+`ifdef VGA_640x480p60		
+parameter SIZE_X = 640,
+         SIZE_Y = 480; 
+`else	
 parameter SIZE_X = 800,
          SIZE_Y = 600; 
-
+`endif
 input clock, control;
 input  [9:0] pin;
 output [9:0] pout;	
