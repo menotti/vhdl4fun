@@ -143,7 +143,7 @@ input 				iZOOM_MODE_SW;
 //	Internal Registers and Wires
 reg		[12:0]		H_Cont, x1_search, x2_search;
 reg		[12:0]		V_Cont, x1_achou, x2_achou, y1_achou, y2_achou;
-reg [5:0] OkLinha;
+reg [6:0] OkLinha, LinhaCheck;
 reg [7:0] contadorBranco;
 reg achou;
 
@@ -175,42 +175,38 @@ always@(posedge iCLK or negedge iRST_N)
 			begin
 				oVGA_R <= 0;
 				oVGA_G <= 0;
-                oVGA_B <= 0;
+            oVGA_B <= 0;
 				oVGA_BLANK <= 0;
 				oVGA_SYNC <= 0;
 				oVGA_H_SYNC <= 0;
-				oVGA_V_SYNC <= 0; 
+				oVGA_V_SYNC <= 0;
+				achou <= 1'b0;
 			end
 		else
 			begin
-// 1)busca um retangulo branco na imagem, que no caso é a placa, com uma margem de erro para a resolução
-// de 100x32.5
 				if(padrao == 1'b1 && achou == 1'b0) begin
-// verificação em uma linha de 100 pixels
 					if(H_Cont >= x1_search && H_Cont <= x2_search) begin
-// caso o pixel for branco entra no if e o contador do pixel acumula + 1
 						if(morfologico == 10'b0000000000) begin
+							if(contadorBranco == 0) begin
+								x1_achou <= H_Cont;
+								y1_achou <= V_Cont;
+							end
 							contadorBranco <= contadorBranco + 1;
-// se o contador passar ou chegar à 85, que é a margem deixada dentro de 100 pixels, ele volta para 0 e busca de novo
-// essa linha recebe ok e o procedimento espera a próxima linha
 							if(contadorBranco >= 85) begin
 								contadorBranco <= 0;
 								OkLinha <= OkLinha + 1;
 							end
-// se na linha determinada no procedimento 1 não foi encontrado o número minimo de pixels brancos, a linha não recebe ok
-// e com isso o processo esquece o que foi computado anteriormente, assim as coordenadas são dadas neste ponto, pois no 
-// próximo clock tudo é feito novamente
-							else begin
-								x1_achou <= H_Cont;
-								y1_achou <= V_Cont;
-								OkLinha <= 0;
-								achou <= 1'b0;
+							else if(H_Cont == x2_search) begin
+								contadorBranco <= 0;
+								LinhaCheck <= LinhaCheck + 1;
 							end
+							else if(LinhaCheck == 32) begin
+								OkLinha <= 0;
+								LinhaCheck <= 0;
+							end
+							else
+								achou <= 1'b0;
 						end
-// se no procedimento 1) conseguuiu achar 28 linhas ok, dentro de um universo de 32,5 é satisfatório, isso quer dizer
-// que nessas coordenadas pode existir um retângulo com a devida proporção de uma placa automotiva
-// dessa forma as cordernadas de x2_achou e y2_achou recebem com uma margem de 10 pixels as coordenadas atuais em que
-// estava sendo procurado o retangulo
 						if(OkLinha >= 28) begin
 							x2_achou <= H_Cont + 10;
 							y2_achou <= V_Cont + 10;
@@ -218,20 +214,15 @@ always@(posedge iCLK or negedge iRST_N)
 							achou <= 1'b1;
 						end
 					end
-//2)se o contador do vga controller em relação as linhas horizontais, V_Cont, chegou ao fim é somado mais um no parametro
-// de busca do procedimento 1)
 					if(V_Cont >= V_SYNC_TOTAL) begin
 						x1_search <= x1_search + 1;
 						x2_search <= x2_search + 1;
-// e se x2_search for maior em relação ao parametro inicial H_SYNC_TOTAL, o procedimento 1) volta para o começo da linha
-// horizontal de 100 pixels para iniciar nova busca 
 						if(x2_search > H_SYNC_TOTAL) begin
 							x1_search <= 0;
 							x2_search <= 100;
 						end
 					end
 				end
-// se achou, teoricamente, a placa, mostra ela em colorido
 				else if(padrao == 1'b1 && achou == 1'b1) begin
 					if(H_Cont >= x1_achou && H_Cont <= x2_achou && V_Cont >= y1_achou && V_Cont <= y2_achou) begin
 						oVGA_R <= puroR;
