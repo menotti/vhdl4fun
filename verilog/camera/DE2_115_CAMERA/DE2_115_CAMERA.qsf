@@ -1038,7 +1038,6 @@ set_global_assignment -name QIP_FILE v/Line_Buffer1.qip
 set_global_assignment -name VERILOG_FILE DE2_115_CAMERA.v
 set_global_assignment -name VERILOG_FILE v/bbinary.v
 set_global_assignment -name VERILOG_FILE v/ddilatation.v
-set_global_assignment -name QIP_FILE v/linebufferBuffer_erosion.qip
 set_global_assignment -name VERILOG_FILE v/Sobel1.v
 set_global_assignment -name VERILOG_FILE v/parallel_add.v
 set_global_assignment -name VERILOG_FILE v/ALTMULT_ADD.v
@@ -1048,9 +1047,7 @@ set_global_assignment -name QIP_FILE v/altmult_add_3.qip
 set_global_assignment -name QIP_FILE v/SQRT.qip
 set_global_assignment -name VERILOG_FILE v/eerosion.v
 set_global_assignment -name VERILOG_FILE v/Eerosion.v
-set_global_assignment -name QIP_FILE v/LineBuffer_dilation.qip
 set_global_assignment -name VERILOG_FILE v/Ddilation.v
 set_global_assignment -name VERILOG_FILE v/Erosion.v
-set_global_assignment -name QIP_FILE v/median_filter.qip
 set_global_assignment -name QIP_FILE v/linebuffer_morph.qip
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

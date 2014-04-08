@@ -59,9 +59,15 @@ module	VGA_Controller(	//	Host Side
 						iRST_N,
 						iZOOM_MODE_SW,
 						Ret,
-						ret1,
-						ret2,
-						ret3
+						x1,
+						y1,
+						x2,
+						y2,
+						puroR,
+						puroG,
+						puroB,
+						padrao,
+						morfologico
 							);
 `include "VGA_Param.h"
 
@@ -103,6 +109,8 @@ parameter	Y_START		=	V_SYNC_CYC+V_SYNC_BACK;
 input		[9:0]	iRed;
 input		[9:0]	iGreen;
 input		[9:0]	iBlue;
+input		[9:0] puroR, puroG, puroB;
+input padrao;
 output	reg			oRequest;
 //	VGA Side
 output	reg	[9:0]	oVGA_R;
@@ -113,13 +121,12 @@ output	reg			oVGA_V_SYNC;
 output	reg			oVGA_SYNC;
 output	reg			oVGA_BLANK;
 input Ret;
-input		[9:0]	ret1;
-input		[9:0]	ret2;
-input		[9:0]	ret3;
+input [9:0] x1;
+input [9:0] y1;
+input [9:0] x2;
+input [9:0] y2;
+input [9:0] morfologico;
 
-
-reg      [6:0] contadorV ;
-reg      [12:0] parametroH1, parametroV1, parametroH2, parametroV2;
 wire		[9:0]	mVGA_R;
 wire		[9:0]	mVGA_G;
 wire		[9:0]	mVGA_B;
@@ -134,8 +141,11 @@ input				iRST_N;
 input 				iZOOM_MODE_SW;
 
 //	Internal Registers and Wires
-reg		[12:0]		H_Cont;
-reg		[12:0]		V_Cont;
+reg		[12:0]		H_Cont, x1_search, x2_search;
+reg		[12:0]		V_Cont, x1_achou, x2_achou, y1_achou, y2_achou;
+reg [5:0] OkLinha;
+reg [7:0] contadorBranco;
+reg achou;
 
 wire	[12:0]		v_mask;
 
@@ -173,16 +183,83 @@ always@(posedge iCLK or negedge iRST_N)
 			end
 		else
 			begin
-				if(Ret == 1'b1) begin
-					if (H_Cont > 500 && H_Cont < 600 && V_Cont > 300 && V_Cont < 400) begin
-						oVGA_R <= ret1;
-						oVGA_G <= ret2;
-						oVGA_B <= ret3;
+// 1)busca um retangulo branco na imagem, que no caso é a placa, com uma margem de erro para a resolução
+// de 100x32.5
+				if(padrao == 1'b1 && achou == 1'b0) begin
+// verificação em uma linha de 100 pixels
+					if(H_Cont >= x1_search && H_Cont <= x2_search) begin
+// caso o pixel for branco entra no if e o contador do pixel acumula + 1
+						if(morfologico == 10'b0000000000) begin
+							contadorBranco <= contadorBranco + 1;
+// se o contador passar ou chegar à 85, que é a margem deixada dentro de 100 pixels, ele volta para 0 e busca de novo
+// essa linha recebe ok e o procedimento espera a próxima linha
+							if(contadorBranco >= 85) begin
+								contadorBranco <= 0;
+								OkLinha <= OkLinha + 1;
+							end
+// se na linha determinada no procedimento 1 não foi encontrado o número minimo de pixels brancos, a linha não recebe ok
+// e com isso o processo esquece o que foi computado anteriormente, assim as coordenadas são dadas neste ponto, pois no 
+// próximo clock tudo é feito novamente
+							else begin
+								x1_achou <= H_Cont;
+								y1_achou <= V_Cont;
+								OkLinha <= 0;
+								achou <= 1'b0;
+							end
+						end
+// se no procedimento 1) conseguuiu achar 28 linhas ok, dentro de um universo de 32,5 é satisfatório, isso quer dizer
+// que nessas coordenadas pode existir um retângulo com a devida proporção de uma placa automotiva
+// dessa forma as cordernadas de x2_achou e y2_achou recebem com uma margem de 10 pixels as coordenadas atuais em que
+// estava sendo procurado o retangulo
+						if(OkLinha >= 28) begin
+							x2_achou <= H_Cont + 10;
+							y2_achou <= V_Cont + 10;
+							OkLinha <= 0;
+							achou <= 1'b1;
+						end
 					end
-					else  begin
-						oVGA_R <= mVGA_R;
-						oVGA_G <= mVGA_G;
-						oVGA_B <= mVGA_B;
+//2)se o contador do vga controller em relação as linhas horizontais, V_Cont, chegou ao fim é somado mais um no parametro
+// de busca do procedimento 1)
+					if(V_Cont >= V_SYNC_TOTAL) begin
+						x1_search <= x1_search + 1;
+						x2_search <= x2_search + 1;
+// e se x2_search for maior em relação ao parametro inicial H_SYNC_TOTAL, o procedimento 1) volta para o começo da linha
+// horizontal de 100 pixels para iniciar nova busca 
+						if(x2_search > H_SYNC_TOTAL) begin
+							x1_search <= 0;
+							x2_search <= 100;
+						end
+					end
+				end
+// se achou, teoricamente, a placa, mostra ela em colorido
+				else if(padrao == 1'b1 && achou == 1'b1) begin
+					if(H_Cont >= x1_achou && H_Cont <= x2_achou && V_Cont >= y1_achou && V_Cont <= y2_achou) begin
+						oVGA_R <= puroR;
+						oVGA_G <= puroG;
+						oVGA_B <= puroB;
+					end
+				end
+//retangulo de linhas finas aleatorio						
+				else if(Ret == 1'b1) begin
+					if (H_Cont == x1 && V_Cont >= y1 && V_Cont <= y2) begin
+						oVGA_R <= 0;
+						oVGA_G <= 1023; 
+						oVGA_B <= 0;
+					end
+					else if (H_Cont == x2 && V_Cont >= y1 && V_Cont <= y2) begin
+						oVGA_R <= 0;
+						oVGA_G <= 1023; 
+						oVGA_B <= 0;
+					end
+					else if (V_Cont == y1 && H_Cont >= x1 && H_Cont <= x2) begin
+						oVGA_R <= 0;
+						oVGA_G <= 1023; 
+						oVGA_B <= 0;
+					end
+					else if (V_Cont == y2 && H_Cont >= x1 && H_Cont <= x2) begin
+						oVGA_R <= 0;
+						oVGA_G <= 1023; 
+						oVGA_B <= 0;
 					end
 				end
 				else begin
@@ -196,7 +273,6 @@ always@(posedge iCLK or negedge iRST_N)
 				oVGA_V_SYNC <= mVGA_V_SYNC;				
 			end               
 	end
-
 
 
 
