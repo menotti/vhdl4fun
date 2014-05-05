@@ -1,45 +1,3 @@
-// --------------------------------------------------------------------
-// Copyright (c) 2010 by Terasic Technologies Inc. 
-// --------------------------------------------------------------------
-//
-// Permission:
-//
-//   Terasic grants permission to use and modify this code for use
-//   in synthesis for all Terasic Development Boards and Altera Development 
-//   Kits made by Terasic.  Other use of this code, including the selling 
-//   ,duplication, or modification of any portion is strictly prohibited.
-//
-// Disclaimer:
-//
-//   This VHDL/Verilog or C/C++ source code is intended as a design reference
-//   which illustrates how these types of functions can be implemented.
-//   It is the user's responsibility to verify their design for
-//   consistency and functionality through the use of formal
-//   verification methods.  Terasic provides no warranty regarding the use 
-//   or functionality of this code.
-//
-// --------------------------------------------------------------------
-//           
-//                     Terasic Technologies Inc
-//                     356 Fu-Shin E. Rd Sec. 1. JhuBei City,
-//                     HsinChu County, Taiwan
-//                     302
-//
-//                     web: http://www.terasic.com/
-//                     email: support@terasic.com
-//
-// --------------------------------------------------------------------
-//
-// Major Functions:	VGA_Controller
-//
-// --------------------------------------------------------------------
-//
-// Revision History :
-// --------------------------------------------------------------------
-//   Ver  :| Author            :| Mod. Date :| Changes Made:
-//   V1.0 :| Johnny FAN Peli Li:| 22/07/2010:| Initial Revision
-// --------------------------------------------------------------------
-
 module	VGA_Controller(	//	Host Side
 						iRed,
 						iGreen,
@@ -69,9 +27,7 @@ module	VGA_Controller(	//	Host Side
 						padrao,
 						morfologico
 							);
-`include "VGA_Param.h"
 
-`ifdef VGA_640x480p60
 //	Horizontal Parameter	( Pixel )
 parameter	H_SYNC_CYC	=	96;
 parameter	H_SYNC_BACK	=	48;
@@ -86,22 +42,6 @@ parameter	V_SYNC_ACT	=	480;
 parameter	V_SYNC_FRONT=	10;
 parameter	V_SYNC_TOTAL=	525; 
 
-`else
- // SVGA_800x600p60
-////	Horizontal Parameter	( Pixel )
-parameter	H_SYNC_CYC	=	128;         //Peli
-parameter	H_SYNC_BACK	=	88;
-parameter	H_SYNC_ACT	=	800;	
-parameter	H_SYNC_FRONT=	40;
-parameter	H_SYNC_TOTAL=	1056;
-//	Virtical Parameter		( Line )
-parameter	V_SYNC_CYC	=	4;
-parameter	V_SYNC_BACK	=	23;
-parameter	V_SYNC_ACT	=	600;	
-parameter	V_SYNC_FRONT=	1;
-parameter	V_SYNC_TOTAL=	628;
-
-`endif
 //	Start Offset
 parameter	X_START		=	H_SYNC_CYC+H_SYNC_BACK;
 parameter	Y_START		=	V_SYNC_CYC+V_SYNC_BACK;
@@ -141,11 +81,15 @@ input				iRST_N;
 input 				iZOOM_MODE_SW;
 
 //	Internal Registers and Wires
-reg		[12:0]		H_Cont, x1_search, x2_search;
-reg		[12:0]		V_Cont, x1_achou, x2_achou, y1_achou, y2_achou;
-reg [6:0] OkLinha, LinhaCheck;
-reg [7:0] contadorBranco;
-reg achou;
+reg		[12:0]		H_Cont, x1_search, x2_search, x1_search2, x2_search2;
+reg		[12:0]		V_Cont, x1_achou2, x2_achou2, y1_achou2, y2_achou2;
+reg [10:0] OkLinha, LinhaCheck, OkLinha2, LinhaCheck2;
+reg [10:0] contadorBranco, contadorBranco2;
+reg achou, achou2;
+
+wire ativo;
+
+wire [12:0]x1_achou, x2_achou, y1_achou, y2_achou;
 
 wire	[12:0]		v_mask;
 
@@ -167,7 +111,20 @@ assign	mVGA_B	=	(	H_Cont>=X_START 	&& H_Cont<X_START+H_SYNC_ACT &&
 						?	iBlue	:	0;
 
 						
-
+Verificador verifica(
+			.Clk(iCLK),
+			.Rst(iRST_N),
+			.morfologico(morfologico),
+			.padrao(padrao),
+			.H_Cont(H_Cont),
+			.V_Cont(V_Cont),
+			.V_SYNC_TOTAL(V_SYNC_TOTAL),
+			.x1(x1_achou),
+			.x2(x2_achou),
+			.y1(y1_achou),
+			.y2(y2_achou),
+			.ativo(ativo)
+			);
 						
 always@(posedge iCLK or negedge iRST_N)
 	begin
@@ -180,54 +137,26 @@ always@(posedge iCLK or negedge iRST_N)
 				oVGA_SYNC <= 0;
 				oVGA_H_SYNC <= 0;
 				oVGA_V_SYNC <= 0;
-				achou <= 1'b0;
 			end
 		else
 			begin
-				if(padrao == 1'b1 && achou == 1'b0) begin
-					if(H_Cont >= x1_search && H_Cont <= x2_search) begin
-						if(morfologico == 10'b0000000000) begin
-							if(contadorBranco == 0) begin
-								x1_achou <= H_Cont;
-								y1_achou <= V_Cont;
-							end
-							contadorBranco <= contadorBranco + 1;
-							if(contadorBranco >= 85) begin
-								contadorBranco <= 0;
-								OkLinha <= OkLinha + 1;
-							end
-							else if(H_Cont == x2_search) begin
-								contadorBranco <= 0;
-								LinhaCheck <= LinhaCheck + 1;
-							end
-							else if(LinhaCheck == 32) begin
-								OkLinha <= 0;
-								LinhaCheck <= 0;
-							end
-							else
-								achou <= 1'b0;
+				if(padrao == 1'b1)begin 
+					if(ativo == 1'b1)begin 
+						if(H_Cont >= x1_achou && H_Cont <= x2_achou && V_Cont >= y1_achou	&& V_Cont <= y2_achou) begin
+							oVGA_R <= puroR;
+							oVGA_G <= puroG;
+							oVGA_B <= puroB;
 						end
-						if(OkLinha >= 28) begin
-							x2_achou <= H_Cont + 10;
-							y2_achou <= V_Cont + 10;
-							OkLinha <= 0;
-							achou <= 1'b1;
+						else begin
+							oVGA_R <= mVGA_R;
+							oVGA_G <= mVGA_G;
+							oVGA_B <= mVGA_B;
 						end
 					end
-					if(V_Cont >= V_SYNC_TOTAL) begin
-						x1_search <= x1_search + 1;
-						x2_search <= x2_search + 1;
-						if(x2_search > H_SYNC_TOTAL) begin
-							x1_search <= 0;
-							x2_search <= 100;
-						end
-					end
-				end
-				else if(padrao == 1'b1 && achou == 1'b1) begin
-					if(H_Cont >= x1_achou && H_Cont <= x2_achou && V_Cont >= y1_achou && V_Cont <= y2_achou) begin
-						oVGA_R <= puroR;
-						oVGA_G <= puroG;
-						oVGA_B <= puroB;
+					else begin
+							oVGA_R <= mVGA_R;
+							oVGA_G <= mVGA_G;
+							oVGA_B <= mVGA_B;
 					end
 				end
 //retangulo de linhas finas aleatorio						
