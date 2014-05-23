@@ -130,13 +130,13 @@ always@(posedge iCLK or negedge iRST_N)
 				achou <= 1'b0;
 				contadorBranco <= 0;
 				x1_search <= 0;
-				x2_search <= 300;
+				x2_search <= 270;
 				OkLinha <= 0;
 				LinhaCheck <= 0;
 				achou2 <= 1'b0;
 				contadorBranco2 <= 0;
 				x1_search2 <= 800;
-				x2_search2 <= 500;
+				x2_search2 <= 530;
 				OkLinha2 <= 0;
 				LinhaCheck2 <= 0;
 				ativo = 1'b0;
@@ -156,11 +156,11 @@ always@(posedge iCLK or negedge iRST_N)
 					ativo <= 1'b1;
 				end
 				if(padrao == 1'b1 && achou == 1'b0 && achou2 == 1'b0) begin
-					if(LinhaCheck == 80)begin
+					if(LinhaCheck == 50)begin
 						OkLinha <= 0;
 						LinhaCheck <= 0;
 					end
-					if(LinhaCheck2 == 80) begin
+					if(LinhaCheck2 == 50) begin
 						OkLinha2 <= 0;
 						LinhaCheck2 <= 0;
 					end				
@@ -177,7 +177,7 @@ always@(posedge iCLK or negedge iRST_N)
 								y1_achou <= V_Cont;
 							end
 							contadorBranco <= contadorBranco + 1;
-							if(contadorBranco >= 240) begin
+							if(contadorBranco >= 230) begin
 								contadorBranco <= 0;
 								OkLinha <= OkLinha + 1;
 								if(OkLinha == 1) 
@@ -186,11 +186,11 @@ always@(posedge iCLK or negedge iRST_N)
 							else
 								achou <= 1'b0;
 						end
-						if(OkLinha >= 40) begin
+						if(OkLinha >= 30) begin
 							x1_achou <= x1_achou - 15;
-							y1_achou <= y1_achou - 10;
-							x2_achou <= H_Cont + 30;
-							y2_achou <= V_Cont + 10;
+							y1_achou <= y1_achou;
+							x2_achou <= H_Cont + 20;
+							y2_achou <= V_Cont + 20;
 							OkLinha <= 0;
 							achou <= 1'b1;
 						end
@@ -204,7 +204,7 @@ always@(posedge iCLK or negedge iRST_N)
 								y1_achou2 <= V_Cont;
 							end
 							contadorBranco2 <= contadorBranco2 + 1;
-							if(contadorBranco2 >= 240) begin
+							if(contadorBranco2 >= 230) begin
 								contadorBranco2 <= 0;
 								OkLinha2 <= OkLinha2 + 1;
 								if(OkLinha2 == 1) 
@@ -213,20 +213,20 @@ always@(posedge iCLK or negedge iRST_N)
 							else
 								achou2 <= 1'b0;
 						end
-						if(OkLinha2 >= 40) begin
+						if(OkLinha2 >= 30) begin
 							x1_achou2 <= x1_achou2 - 15;
-							y1_achou2 <= y1_achou2 - 10;
-							x2_achou2 <= H_Cont + 30;
-							y2_achou2 <= V_Cont + 10;
+							y1_achou2 <= y1_achou2;
+							x2_achou2 <= H_Cont + 20;
+							y2_achou2 <= V_Cont + 20;
 							OkLinha2 <= 0;
 							achou2 <= 1'b1;
 						end
 					end
 					if(V_Cont >= V_SYNC_TOTAL && H_Cont == 0) begin
-						x1_search <= x1_search + 10;
-						x2_search <= x2_search + 10;
-						x1_search2 <= x1_search2 - 10;
-						x2_search2 <= x2_search2 - 10;
+						x1_search <= x1_search + 5;
+						x2_search <= x2_search + 5;
+						x1_search2 <= x1_search2 - 5;
+						x2_search2 <= x2_search2 - 5;
 						if(x1_search == x1_search2) begin
 							x1_search <= 0;
 							x2_search <= 300;
@@ -318,19 +318,38 @@ always@(posedge iCLK or negedge iRST_N) begin
 		if(reset_validacao == 1'b1)
 			reset_busca <= 1'b0;
 		if(check == 1'b1) begin
-			if(H_Cont >= x1_achou2 && H_Cont <= x2_achou2 && V_Cont >= y1_achou2 && V_Cont <= y2_achou2) begin
-				if(bSobel == 10'b1111111111)
-					contador <= contador + 1;
-			end
-			if(V_Cont == y2_achou2 && H_Cont == x2_achou2) begin
-				if(contador <= 12000) begin
-					contador <= 0;
-					reset_busca <= 1'b1;
+			if(achou2 == 1'b1) begin
+				if(H_Cont >= x1_achou2 && H_Cont <= x2_achou2 && V_Cont >= y1_achou2 && V_Cont <= y2_achou2) begin
+					if(bSobel == 10'b1111111111)
+						contador <= contador + 1;
 				end
-				else begin
-					valido <= 1'b1;
-					contador <= 0;
-					reset_busca <= 0;
+				if(V_Cont == y2_achou2 && H_Cont == x2_achou2) begin
+					if(contador <= 6000) begin
+						contador <= 0;
+						reset_busca <= 1'b1;
+					end
+					else begin
+						valido <= 1'b1;
+						contador <= 0;
+						reset_busca <= 0;
+					end
+				end
+			end
+			else begin
+				if(H_Cont >= x1_achou && H_Cont <= x2_achou && V_Cont >= y1_achou && V_Cont <= y2_achou) begin
+					if(bSobel == 10'b1111111111)
+						contador <= contador + 1;
+				end
+				if(V_Cont == y2_achou && H_Cont == x2_achou) begin
+					if(contador <= 6000) begin
+						contador <= 0;
+						reset_busca <= 1'b1;
+					end
+					else begin
+						valido <= 1'b1;
+						contador <= 0;
+						reset_busca <= 0;
+					end
 				end
 			end
 		end
