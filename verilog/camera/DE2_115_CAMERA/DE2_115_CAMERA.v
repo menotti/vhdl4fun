@@ -465,13 +465,11 @@ wire	[9:0]	oVGA_G;	 				//	VGA Green[9:0]
 wire	[9:0]	oVGA_B;   				//	VGA Blue[9:0]
 wire  [7:0] value, value2, value4;
 wire [9:0] aux1, aux2, aux3;
-reg [9:0] ret1, ret2, ret3;
-wire [7:0] hist;
+reg [9:0] x1, x2, y1, y2;
 wire  [9:0] Y;
 wire  [9:0] Sobel_edge;
 wire [9:0] wRed, wGreen, wBlue, wSobel, fDilation, fErosion;
-wire [17:0]sw;
-
+reg placa;
 reg Ret;
 //power on start
 wire             auto_start;
@@ -491,7 +489,9 @@ integer i;
 
 // Binary
 wire	[9:0] BIN_THRESHOLD;
-assign	BIN_THRESHOLD = {5'b0, SW[8], SW[7], SW[6], SW[5], SW[4], SW[3], 5'b10000};
+assign	BIN_THRESHOLD = {4'b0, SW[6], SW[5], SW[4], SW[3], 4'b1000};
+wire [9:0] SOBEL_THRESHOLD;
+assign   SOBEL_THRESHOLD = {4'b0, SW[10], SW[9], SW[8], SW[7], 4'b0000};
 wire	mvalue_Binary;
 wire	[9:0] Bin_image;
 
@@ -541,15 +541,20 @@ always @ (button3) begin
 	endcase
 end
 
-always@(SW[1])begin
+always@(SW[1] || SW[2])begin
 	if(SW[1] == 1'b1) begin
-		ret1 <= 300;
-		ret2 <= 0;
-		ret3 <= 0;
+		x1 <= 250;
+		x2 <= 400;
+		y1 <= 200;
+		y2 <= 350;
 		Ret <= 1'b1;
 	end
-	else
+	else if(SW[2] == 1'b1)
+		placa <= 1'b1;
+	else begin
 		Ret <= 1'b0;
+		placa <= 1'b0;
+	end
 end
 
 assign  oVGA_R  = Read_DATA2[9:0];
@@ -728,6 +733,9 @@ I2C_CCD_Config 		u8	(	//	Host Side
 //VGA DISPLAY
 VGA_Controller		u1	(	//	Host Side
 							.oRequest(Read),
+							.puroR(oVGA_R),
+							.puroG(oVGA_G),
+							.puroB(oVGA_B),
 							.iRed(aux1),
 							.iGreen(aux2),
 							.iBlue(aux3),
@@ -744,9 +752,13 @@ VGA_Controller		u1	(	//	Host Side
 							.iRST_N(DLY_RST_2),
 							.iZOOM_MODE_SW(SW[16]),
 							.Ret(Ret),
-							.ret1(ret1),
-							.ret2(ret2),
-							.ret3(ret3)
+							.x1(x1),
+							.x2(x2),
+							.y1(y1),
+							.y2(y2), 
+							.padrao(placa),
+							.morfologico(morphologic),
+							.bSobel(fErosion_sobel)
 						);				
 
 						
@@ -798,7 +810,7 @@ bbinary binary1 (
   .RESET(DLY_RST_2),
   .input_data(wSobel),
   .iDval(Read),
-  .thresh(BIN_THRESHOLD),
+  .thresh(SOBEL_THRESHOLD),
   .oDval(mvalue_binary2),
   .output_data(bSobel)
 );		
