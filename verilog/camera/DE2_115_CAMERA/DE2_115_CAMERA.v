@@ -587,6 +587,7 @@ Reset_Delay			u2	(	.iCLK(CLOCK2_50),
 							.oRST_4(DLY_RST_4)
 						);
 //D5M image capture
+wire freeze;
 CCD_Capture			u3	(	.oDATA(mCCD_DATA),
 							.oDVAL(mCCD_DVAL),
 							.oX_Cont(X_Cont),
@@ -596,7 +597,7 @@ CCD_Capture			u3	(	.oDATA(mCCD_DATA),
 							.iFVAL(rCCD_FVAL),
 							.iLVAL(rCCD_LVAL),
 							.iSTART(!KEY[3]|auto_start),
-							.iEND(!KEY[2]),
+							.iEND(freeze),
 							.iCLK(~D5M_PIXLCLK),
 							.iRST(DLY_RST_2)
 						);
@@ -758,7 +759,8 @@ VGA_Controller		u1	(	//	Host Side
 							.y2(y2), 
 							.padrao(placa),
 							.morfologico(morphologic),
-							.bSobel(fErosion_sobel)
+							.bSobel(fClosing_sobel),
+							.freeze(freeze)
 						);				
 
 						

@@ -26,7 +26,8 @@ module	VGA_Controller(	//	Host Side
 						puroB,
 						padrao,
 						morfologico,
-						bSobel
+						bSobel,
+						freeze
 							);
 
 //	Horizontal Parameter	( Pixel )
@@ -61,6 +62,7 @@ output	reg			oVGA_H_SYNC;
 output	reg			oVGA_V_SYNC;
 output	reg			oVGA_SYNC;
 output	reg			oVGA_BLANK;
+output reg freeze;
 input Ret;
 input [9:0] x1;
 input [9:0] y1;
@@ -142,6 +144,7 @@ always@(posedge iCLK or negedge iRST_N)
 				ativo = 1'b0;
 				check = 1'b0;
 				reset_validacao <= 1'b0;
+				freeze <= 1'b0;
 			end
 		else
 			begin
@@ -186,7 +189,7 @@ always@(posedge iCLK or negedge iRST_N)
 							else
 								achou <= 1'b0;
 						end
-						if(OkLinha >= 30) begin
+						if(OkLinha >= 44) begin
 							x1_achou <= x1_achou - 15;
 							y1_achou <= y1_achou;
 							x2_achou <= H_Cont + 20;
@@ -213,7 +216,7 @@ always@(posedge iCLK or negedge iRST_N)
 							else
 								achou2 <= 1'b0;
 						end
-						if(OkLinha2 >= 30) begin
+						if(OkLinha2 >= 44) begin
 							x1_achou2 <= x1_achou2 - 15;
 							y1_achou2 <= y1_achou2;
 							x2_achou2 <= H_Cont + 20;
@@ -240,6 +243,7 @@ always@(posedge iCLK or negedge iRST_N)
 							check <= 1'b1;
 				if(ativo == 1'b1)begin 
 					if(achou == 1'b1)begin 
+						freeze <= 1'b1;
 						if(H_Cont >= x1_achou && H_Cont <= x2_achou && V_Cont >= y1_achou	&& V_Cont <= y2_achou) begin
 							oVGA_R <= puroR;
 							oVGA_G <= puroG;
@@ -247,22 +251,23 @@ always@(posedge iCLK or negedge iRST_N)
 							check <= 1'b0;
 						end
 						else begin
-							oVGA_R <= mVGA_R;
-							oVGA_G <= mVGA_G;
-							oVGA_B <= mVGA_B;
+							oVGA_R <= 10'b0000000000;
+							oVGA_G <= 10'b0000000000;
+							oVGA_B <= 10'b0000000000;
 							check <= 1'b0;
 						end
 					end
 					else if(achou2 == 1'b1) begin
+						freeze <= 1'b1;
 						if(H_Cont >= x1_achou2 && H_Cont <= x2_achou2 && V_Cont >= y1_achou2	&& V_Cont <= y2_achou2) begin
 							oVGA_R <= puroR;
 							oVGA_G <= puroG;
 							oVGA_B <= puroB;
 						end
 						else begin
-							oVGA_R <= mVGA_R;
-							oVGA_G <= mVGA_G;
-							oVGA_B <= mVGA_B;
+							oVGA_R <= 10'b0000000000;
+							oVGA_G <= 10'b0000000000;
+							oVGA_B <= 10'b0000000000;
 						end
 					end
 					else begin
@@ -324,7 +329,7 @@ always@(posedge iCLK or negedge iRST_N) begin
 						contador <= contador + 1;
 				end
 				if(V_Cont == y2_achou2 && H_Cont == x2_achou2) begin
-					if(contador <= 6000) begin
+					if(contador <= 7300) begin
 						contador <= 0;
 						reset_busca <= 1'b1;
 					end
@@ -341,7 +346,7 @@ always@(posedge iCLK or negedge iRST_N) begin
 						contador <= contador + 1;
 				end
 				if(V_Cont == y2_achou && H_Cont == x2_achou) begin
-					if(contador <= 6000) begin
+					if(contador <= 7300) begin
 						contador <= 0;
 						reset_busca <= 1'b1;
 					end
